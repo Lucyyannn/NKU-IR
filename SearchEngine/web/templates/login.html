@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录页面</title>
+    <script type="text/javascript">
+        // 页面加载后自动跳转到主页面
+        function redirectToSearchPage() {
+            setTimeout(function() {
+                window.location.href = "{{ url_for('search') }}";  // 三秒后跳转至搜索页面
+            }, 1500);  // 延迟1.5秒跳转
+        }
+    </script>
+</head>
+<body>
+    <h1>登录</h1>
+
+    <!-- 检查是否有 flash 消息 -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div>
+            {% for category, message in messages %}
+                {% if category == 'danger' %}
+                    <p style="color:red;">{{ message }}</p>
+                {% elif category == 'success' %}
+                    <p style="color:green;">{{ message }}</p>
+                    <!-- 登录成功后，调用 JavaScript 延迟跳转 -->
+                    <script type="text/javascript">
+                        redirectToSearchPage();  // 调用跳转函数
+                    </script>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- 登录表单 -->
+    <form method="POST">
+        <label for="username">用户名：</label>
+        <input type="text" name="username" required><br>
+        <label for="password">密码：</label>
+        <input type="password" name="password" required><br>
+        <button type="submit">登录</button>
+    </form>
+
+    <p>还没有账号？<a href="{{ url_for('register') }}">点击注册</a></p>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            height: 100vh;
+        }
+        .header {
+            width: 100%;
+            padding: 10px 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .header a {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+        .search-container {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            margin-top: 20px;
+        }
+        .search-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-left: 10px;
+        }
+        button {
+            padding: 12px 20px;
+            font-size: 18px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+
+        .clear-button {
+            background-color: #d9534f;
+        }
+        .clear-button:hover {
+            background-color: #c9302c;
+        }
+        .history {
+            margin-top: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+            text-align: left;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .history-item {
+            padding: 5px;
+            cursor: pointer;
+        }
+        .history-item:hover {
+            background-color: #eaeaea;
+        }
+    </style>
+    <script>
+        // 清空输入框内容
+        function clearInput() {
+            document.getElementById("query").value = "";
+        }
+
+        // 点击历史记录跳转到相应搜索页面
+        function searchHistory(element) {
+            // 获取 data-query 数据
+            const query = element.getAttribute('data-query');   
+            console.log("Search Query: " + query);
+
+            // 填充搜索框 提交表单
+            document.getElementById("query").value = query;
+            document.forms[0].submit();  // 提交表单进行搜索
+        }
+    </script>
+</head>
+<body>
+    <!-- 登录/注册/退出 -->
+    <div class="header">
+        <div>
+            {% if username %}
+                <a href="{{ url_for('logout') }}">退出登录</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">登录</a>
+                <a href="{{ url_for('register') }}">注册</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 搜索框 -->
+    <div class="search-container">
+        <h1>{% if username %}欢迎，{{ username }}！{% else %}请先登录{% endif %}</h1>
+        
+        <!--按钮-->
+        <form method="POST" action="/" class="search-form" id="searchForm">
+            <input type="text" name="query" id="query" placeholder="请输入查询词..." required>
+            <div class="button-container">
+                <button type="submit">搜索</button>
+                <button type="button" class="clear-button" onclick="clearInput()">清空</button>
+            </div>
+        </form>
+
+        {% if username %} <!--仅当已登录时显示搜索历史-->
+            <p>搜索历史</p>
+            <div class="history">
+                <ul>
+                    {% for record in history %}
+                        <li class="history-item" data-query="{{ record['query'] }}" onclick="searchHistory(this)">
+                            {{ record['query'] }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <!-- 清空历史记录按钮 -->
+            <form method="POST" action="/">
+                <button type="submit" name="clear_history" value="1">清空历史记录</button>
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>
